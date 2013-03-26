@@ -1,0 +1,62 @@
+<script>
+
+	// Translated from the CSS3 documentation
+	var hslToRgb = function(h, s, l){
+		if(l <= 0.5) {
+			var m2 = l * (s + 1);
+		} else {
+			var m2 = l + s - l * s;
+		}
+		var m1 = l * 2 - m2;
+		var r = hueToRgb(m1, m2, h + 1 / 3);
+		var g = hueToRgb(m1, m2, h);
+		var b = hueToRgb(m1, m2, h - 1 / 3);
+		return [r,g,b];
+	};
+	
+	var hueToRgb = function(m1, m2, h) {
+		if(h < 0) {
+			h = h + 1;
+		}
+		if(h > 1) {
+			h = h - 1;
+		}
+		if(h * 6 < 1) {
+			return m1 + (m2 - m1) * h * 6;
+		}
+		if(h * 2 < 1) {
+			return m2;
+		}
+		if(h * 3 < 2) {
+			return m1 + (m2 - m1) * (2 / 3 - h) * 6;
+		}
+		return m1;
+	};
+
+	var submitHslGetRgb = function(form) {
+		var resultElement = document.getElementById("hsl-to-rgb-result");
+		var h = form.elements.h.value / 360;
+		var s = form.elements.s.value / 100;
+		var l = form.elements.l.value / 100;
+		var rgb = hslToRgb(h, s, l).map(function(i) {
+			return Math.round(i * 255);
+		});
+		var hex = "#" + rgb.map(function(i) {
+			var hex = i.toString(16);
+			if(hex.length === 1) {
+				hex = "0" + hex;
+			}
+			return hex;
+		}).join("").toUpperCase();
+		resultElement.innerHTML = rgb.join(",") + " " + hex;
+		resultElement.setAttribute("style", "background: " + hex);
+	}
+
+</script>
+<form action="javascript:void(0)" onsubmit="submitHslGetRgb(this);return false" method="get">
+	<input type="text" name="h" size="3" placeholder="H"/>&deg;
+	<input type="text" name="s" size="3" placeholder="S"/>%
+	<input type="text" name="l" size="3" placeholder="L"/>%
+	<button type="submit">Go</button>
+</form>
+<div id="hsl-to-rgb-result">Enter a value</div>
